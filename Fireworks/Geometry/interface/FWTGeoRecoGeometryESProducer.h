@@ -25,8 +25,15 @@ class TGeoMaterial;
 class TGeoMedium;
 class GeomDet;
 class CaloCellGeometry;
+class HGCalGeometry;
+
 class FWTGeoRecoGeometryESProducer : public edm::ESProducer
 {
+   enum ERecoDet  {kDummy, 
+                   kSiPixel, kSiStrip,
+                   kMuonDT, kMuonRPC, kMuonCSC, kMuonGEM, kMuonME0,
+                   kECal, kHCal,
+                   kHGCE, kHGCH };
 public:
    FWTGeoRecoGeometryESProducer( const edm::ParameterSet& );
    virtual ~FWTGeoRecoGeometryESProducer( void );
@@ -39,14 +46,15 @@ private:
 
    TGeoManager*      createManager( int level );
    TGeoShape*        createShape( const GeomDet *det );
-   TGeoVolume*       createVolume( const std::string& name, const GeomDet *det, const std::string& matname = "Air" );
-   TGeoMaterial*     createMaterial( const std::string& name );
+   TGeoVolume*       createVolume( const std::string& name, const GeomDet *det, ERecoDet = kDummy );
+   // TGeoMaterial*     createMaterial( const std::string& name );
 
-   TGeoVolume* getTruncatedPyramidVolume(const CaloCellGeometry* cell);
-   TGeoVolume* getIdealZPrismVolume(const CaloCellGeometry* cell);
-   TGeoVolume* getIdealObliquePrismVolume(const CaloCellGeometry* cell);
-   TGeoVolume* getCalloCellVolume(const CaloCellGeometry* cell);
-   TGeoVolume*  GetDaughter(TGeoVolume* mother, const char* prefix, int id);
+   TGeoVolume*  GetDaughter(TGeoVolume* mother, const char* prefix, ERecoDet cidx, int id);
+   TGeoVolume*  GetDaughter(TGeoVolume* mother, const char* prefix, ERecoDet cidx);
+   TGeoVolume*  GetTopHolder( const char* prefix, ERecoDet cidx);
+
+   TGeoMedium* GetMedium(ERecoDet);
+
    void addPixelBarrelGeometry();
    void addPixelForwardGeometry();
    void addTIBGeometry();
@@ -57,17 +65,24 @@ private:
    void addDTGeometry();
    void addRPCGeometry();
    void addGEMGeometry();
+   void addME0Geometry();
    void addEcalCaloGeometry();
+   void addHcalCaloGeometryBarrel();
+   void addHcalCaloGeometryEndcap();
+   void addHGCal();
   
    std::map<std::string, TGeoShape*>    m_nameToShape;
    std::map<TGeoShape*, TGeoVolume*>   m_shapeToVolume;
-   std::map<std::string, TGeoMaterial*> m_nameToMaterial;
-   std::map<std::string, TGeoMedium*>   m_nameToMedium;
+   std::map<ERecoDet, TGeoMedium*> m_recoMedium;
 
    edm::ESHandle<GlobalTrackingGeometry> m_geomRecord;
    edm::ESHandle<CaloGeometry>           m_caloGeom;
    const TrackerGeometry* m_trackerGeom;
   
+   std::map<std::string, edm::ESHandle<HGCalGeometry> >  m_hgcGeom;
+
+   //edm::ESHandle<HGCalGeometry>  m_hgcGeom;
+
    boost::shared_ptr<FWTGeoRecoGeometry> m_fwGeometry;
 
    TGeoMedium* m_dummyMedium;
