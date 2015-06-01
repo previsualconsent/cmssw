@@ -106,6 +106,12 @@ class EcalElectronicsMapping {
   std::vector<EcalScDetId> getEcalScDetId(int DCCid, int DCC_Channel,
 					  bool ignoreSingleCrystal = true) const;
 
+  /// returns Token Ring id of an EcalDetId
+  int TokenRingid(const DetId& id);
+
+  /// returns Token Ring id from DCC and tower(CCU)
+  int TokenRingid(int DCCid, int tower);
+
   /// returns the DCC of an EBDetId
   int DCCid(const EBDetId& id) const;
 
@@ -288,6 +294,8 @@ class EcalElectronicsMapping {
   //Needed only in the EE (contains only first quadrant object) 
   EcalElectronicsMap m_items;
 
+  /// A map of Endcap (DCCid,tower) to TokenRing;
+  std::map<std::pair<int, int>, int> EETokenRingMap;
 
   // Maps between DCC and LaserMonitoring readout numbers (take care that EB DCCs and two EE DCCs
   // actually correspond to two LMs. The map contain only the first one).

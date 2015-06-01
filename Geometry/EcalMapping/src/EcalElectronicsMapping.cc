@@ -70,6 +70,167 @@ EcalElectronicsMapping::EcalElectronicsMapping() {
 	
 }
 
+int EcalElectronicsMapping::TokenRingid(const DetId& id)
+{
+	EcalElectronicsId elecId = getElectronicsId(id);
+	return TokenRingid(elecId.dccId(), elecId.towerId());
+}
+
+int EcalElectronicsMapping::TokenRingid(int DCCid, int tower)
+{
+	// If we are in the barrel
+	if(DCCid >= MIN_DCCID_EBM && DCCid <= MAX_DCCID_EBP)
+	{
+		// Every 2 towers are in different token rings
+		int offset =  (tower % 4 == 1 || tower % 4 == 2) ? 1 : 0;
+		if(tower >= 1  || tower <= 20) return 1 + offset;
+		if(tower >= 21 || tower <= 36) return 3 + offset;
+		if(tower >= 37 || tower <= 52) return 5 + offset;
+		if(tower >= 53 || tower <= 70) return 7 + offset;
+	}
+	// If it is a valid DCC we are in the endcap
+	else if(DCCid >= MIN_DCCID && DCCid <= MAX_DCCID)
+	{
+		if(EETokenRingMap.size() == 0)
+		{
+			for(int n: { 2,  5,  9,  7,  8,  6,  1,  4})    
+			{
+				EETokenRingMap[std::pair<int,int>(8,n)] = 6;  
+				EETokenRingMap[std::pair<int,int>(53,n)] = 8;
+			}
+			for(int n: { 4,  6, 33,  7, 32,  5,  3,  1,  2})    
+			{
+				EETokenRingMap[std::pair<int,int>(7,n)] = 8;
+  				EETokenRingMap[std::pair<int,int>(9,n)] =  5;
+  				EETokenRingMap[std::pair<int,int>(52,n)] =  5;
+				EETokenRingMap[std::pair<int,int>(54,n)] =  8;
+			}
+			for(int n: { 8,  6,  4,  2,  3,  1,  7,  5})    
+			{
+				EETokenRingMap[std::pair<int,int>(3,n)] = 5;
+  				EETokenRingMap[std::pair<int,int>(4,n)] = 8;
+				EETokenRingMap[std::pair<int,int>(48,n)] = 8;
+				EETokenRingMap[std::pair<int,int>(49,n)] = 5;
+			}
+			for(int n: { 9,  1, 10,  2, 11,  3,  6,  4,  5})    
+			{
+				EETokenRingMap[std::pair<int,int>(2,n)] = 5;
+  				EETokenRingMap[std::pair<int,int>(5,n)] = 8;
+				EETokenRingMap[std::pair<int,int>(47,n)] = 8;
+				EETokenRingMap[std::pair<int,int>(50,n)] = 5;
+			}
+			for(int n: { 9,  7,  8,  6,  2,  5,  1,  4})    
+			{
+				EETokenRingMap[std::pair<int,int>(1,n)] = 5;
+				EETokenRingMap[std::pair<int,int>(6,n)] = 8;
+				EETokenRingMap[std::pair<int,int>(46,n)] = 8;
+				EETokenRingMap[std::pair<int,int>(51,n)] = 5;
+			}
+			for(int n: {10, 12, 14, 16, 15, 17, 11, 13,  3})    
+			{
+				EETokenRingMap[std::pair<int,int>(8,n)] = 5;
+  				EETokenRingMap[std::pair<int,int>(53,n)] = 7;
+			}
+			for(int n: {11, 25, 12, 26, 13, 20, 14, 19})    
+			{
+				EETokenRingMap[std::pair<int,int>(7,n)] = 7;
+  				EETokenRingMap[std::pair<int,int>(9,n)] = 6;
+  				EETokenRingMap[std::pair<int,int>(52,n)] = 6;
+  			 	EETokenRingMap[std::pair<int,int>(54,n)] = 7;
+			}
+			for(int n: {13, 11, 20, 18, 19, 10, 12,  3})    
+			{
+				EETokenRingMap[std::pair<int,int>(1,n)] = 7;
+  				EETokenRingMap[std::pair<int,int>(6,n)] = 6;
+  				EETokenRingMap[std::pair<int,int>(46,n)] = 6;
+  				EETokenRingMap[std::pair<int,int>(51,n)] = 7;
+			}
+			for(int n: {14, 16, 21, 23, 22, 24, 15, 17, 69, 70})    
+			{
+				EETokenRingMap[std::pair<int,int>(1,n)] = 6;
+  				EETokenRingMap[std::pair<int,int>(6,n)] = 7;
+  				EETokenRingMap[std::pair<int,int>(46,n)] = 7;
+  				EETokenRingMap[std::pair<int,int>(51,n)] = 6;
+			}
+			for(int n: {16, 14, 12, 10, 11,  9, 15, 13, 33})    
+			{
+				EETokenRingMap[std::pair<int,int>(3,n)] = 6;
+  				EETokenRingMap[std::pair<int,int>(4,n)] = 7;
+  				EETokenRingMap[std::pair<int,int>(48,n)] = 7;
+  				EETokenRingMap[std::pair<int,int>(49,n)] = 6;
+			}
+			for(int n: {17, 21, 18, 19, 30, 22, 23, 20})    
+			{
+				EETokenRingMap[std::pair<int,int>(3,n)] = 7;
+  				EETokenRingMap[std::pair<int,int>(4,n)] = 6;
+  				EETokenRingMap[std::pair<int,int>(48,n)] = 6;
+  				EETokenRingMap[std::pair<int,int>(49,n)] = 7;
+			}
+			for(int n: {21,  8, 20,  7, 19, 13, 12, 14})    
+			{
+				EETokenRingMap[std::pair<int,int>(2,n)] = 6;
+  				EETokenRingMap[std::pair<int,int>(5,n)] = 7;
+  				EETokenRingMap[std::pair<int,int>(47,n)] = 7;
+  				EETokenRingMap[std::pair<int,int>(50,n)] = 6;
+			}
+			for(int n: {22, 17, 15,  9,  8, 10, 16, 18})    
+			{
+				EETokenRingMap[std::pair<int,int>(7,n)] = 6;
+  				EETokenRingMap[std::pair<int,int>(9,n)] = 7;
+  				EETokenRingMap[std::pair<int,int>(52,n)] = 7;
+  				EETokenRingMap[std::pair<int,int>(54,n)] = 6;
+			}
+			for(int n: {22, 24, 15, 17, 16, 25, 23, 69, 70})    
+			{
+				EETokenRingMap[std::pair<int,int>(2,n)] = 7;
+  				EETokenRingMap[std::pair<int,int>(5,n)] = 6;
+  				EETokenRingMap[std::pair<int,int>(47,n)] = 6;
+  				EETokenRingMap[std::pair<int,int>(50,n)] = 7;
+			}
+			for(int n: {23, 29, 24, 31, 27, 30, 21, 28})    
+			{
+				EETokenRingMap[std::pair<int,int>(7,n)] = 5;
+  				EETokenRingMap[std::pair<int,int>(9,n)] = 8;
+  				EETokenRingMap[std::pair<int,int>(52,n)] = 8;
+  				EETokenRingMap[std::pair<int,int>(54,n)] = 5;
+			}
+			for(int n: {24, 26, 25, 29, 27, 31, 28, 32})    
+			{
+				EETokenRingMap[std::pair<int,int>(3,n)] = 8;
+  				EETokenRingMap[std::pair<int,int>(4,n)] = 5;
+  				EETokenRingMap[std::pair<int,int>(48,n)] = 5;
+  				EETokenRingMap[std::pair<int,int>(49,n)] = 8;
+			}
+			for(int n: {26, 29, 33, 31, 32, 30, 25, 28})    
+			{
+				EETokenRingMap[std::pair<int,int>(8,n)] = 7;
+  				EETokenRingMap[std::pair<int,int>(53,n)] = 5;
+			}
+			for(int n: {29, 27, 28, 26, 30, 18, 31, 32})    
+			{
+				EETokenRingMap[std::pair<int,int>(2,n)] = 8;
+  				EETokenRingMap[std::pair<int,int>(5,n)] = 5;
+  				EETokenRingMap[std::pair<int,int>(47,n)] = 5;
+  				EETokenRingMap[std::pair<int,int>(50,n)] = 8;
+			}
+			for(int n: {34, 28, 30, 32, 33, 31, 29, 27, 26, 25})    
+			{
+				EETokenRingMap[std::pair<int,int>(1,n)] = 8;
+  				EETokenRingMap[std::pair<int,int>(6,n)] = 5;
+  				EETokenRingMap[std::pair<int,int>(46,n)] = 5;
+  				EETokenRingMap[std::pair<int,int>(51,n)] = 8;
+			}
+			for(int n: {34, 36, 38, 40, 39, 41, 35, 37, 27})    
+			{
+				EETokenRingMap[std::pair<int,int>(8,n)] = 8;
+  				EETokenRingMap[std::pair<int,int>(53,n)] = 6;
+			}
+		}
+
+		return EETokenRingMap[std::pair<int,int>(DCCid,tower)];
+	}
+	return 0;
+}
 
 int EcalElectronicsMapping::DCCid(const EBDetId& id) const 
 
