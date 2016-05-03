@@ -53,8 +53,9 @@ short EcalRingCalibrationTools::getRingIndexInSubdet(DetId id)
    }
    if (id.subdetId() == EcalEndcap) {
       //needed only for the EE, it can be replaced at some point with something smarter
-      if (!isInitializedFromGeometry_)
-         initializeFromGeometry();
+      if (not isInitializedFromGeometry_)
+        throw std::logic_error("EcalRingCalibrationTools::initializeFromGeometry Ecal Endcap geometry is not initialized");
+
       EEDetId eid(id);
       short endcapRingIndex = endcapRingIndex_[eid.ix() - 1][eid.iy() - 1];
 
