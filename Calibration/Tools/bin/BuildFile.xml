@@ -57,7 +57,6 @@
   <use   name="Geometry/EcalAlgo"/>
   <use   name="Geometry/Records"/>
   <use   name="RecoEcal/EgammaClusterAlgos"/>
-  <use   name="RecoEcal/EgammaCoreTools"/>
   <use   name="RecoLocalCalo/EcalRecAlgos"/>
   <use   name="rootcore"/>
   <use   name="rootmath"/>
